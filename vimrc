@@ -60,21 +60,26 @@ function! QuickfixFilenames()
   return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
 endfunction
 
+"Highlight trailing spaces
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
 "mappings
 map ,pt  <Esc>:%! perltidy<CR>
 map ,ptv <Esc>:'<,'>! perltidy<CR>
 map ,t   <Esc>:!prove -v %<CR>
 nmap ,v :tabedit $MYVIMRC<CR>
 nmap ,q :!perl %<CR>
+nmap ,c :!perl -c %<CR>
 nmap ,a :!python %<CR>
+nmap ,e :TlistOpen<CR>
 
 " mapping for tabularize
 nmap ,a= :Tabularize /=<CR>
 vmap ,a= :Tabularize /=<CR>
 nmap ,a: :Tabularize /:\zs<CR>
 vmap ,a: :Tabularize /:\zs<CR>
-
-"" Pytest
-nmap <silent>,f <Esc>:Pytest file<CR>
-nmap <silent>,c <Esc>:Pytest class<CR>
-nmap <silent>,m <Esc>:Pytest method<CR>
