@@ -1,0 +1,66 @@
+set rtp+=/Users/lei/.local/lib/python3.5/site-packages/powerline/bindings/vim
+
+set nocompatible
+set t_Co=256
+ 
+" let g:minBufExplForceSyntaxEnable = 1
+" from powerline.vim import setup as powerline_setup
+" python powerline_setup()
+" python del powerline_setup
+ 
+set laststatus=2 " Always display the statusline in all windows
+set guifont=Inconsolata\ for\ Powerline:h14
+set noshowmode " Hide the default mode text (e.g. -- INSERT -- below the statusline)
+
+"Enable modeline
+set modelines=1
+
+"Enable filetype plugin
+filetype plugin on
+syntax on
+
+"Set default shift width, tab stop, text width etc
+set sw=4
+set ts=4
+set tw=72
+set expandtab
+set nu
+
+"Auto clean fugitive buffers
+if has("autocmd")
+    autocmd BufReadPost fugitive://* set bufhidden=delete
+endif
+
+"Add command to get Quickfix file list
+command! -nargs=0 -bar Qargs execute 'args' QuickfixFilenames()
+function! QuickfixFilenames()
+  let buffer_numbers = {}
+  for quickfix_item in getqflist()
+    let buffer_numbers[quickfix_item['bufnr']] = bufname(quickfix_item['bufnr'])
+  endfor
+  return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
+endfunction
+
+"Highlight trailing spaces
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
+"mappings
+map ,pt  <Esc>:%! perltidy<CR>
+map ,ptv <Esc>:'<,'>! perltidy<CR>
+map ,t   <Esc>:!prove -v %<CR>
+nmap ,v :tabedit $MYVIMRC<CR>
+nmap ,q :!perl %<CR>
+nmap ,c :!perl -c %<CR>
+nmap ,a :!python %<CR>
+nmap ,e :TlistOpen<CR>
+
+" mapping for tabularize
+nmap ,a= :Tabularize /=<CR>
+vmap ,a= :Tabularize /=<CR>
+nmap ,a: :Tabularize /:\zs<CR>
+vmap ,a: :Tabularize /:\zs<CR>
